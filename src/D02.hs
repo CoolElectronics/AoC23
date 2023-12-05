@@ -1,19 +1,11 @@
+module D02 where
+
 import Data.Char
 import Data.List
 import Debug.Trace
 import System.IO
-  ( IOMode (ReadMode),
-    hClose,
-    hGetContents,
-    openFile,
-  )
 import Text.Read
-
-splitBy delimiter = foldr f [[]]
-  where
-    f c l@(x : xs)
-      | c == delimiter = [] : l
-      | otherwise = (c : x) : xs
+import Util
 
 procline :: [Char] -> (Int, Int, Int, Int)
 procline line =
@@ -30,13 +22,12 @@ procline line =
 
 gamevalid (_, r, g, b) = r <= 12 && g <= 13 && b <= 14
 
+powergame (_, r, g, b) = r * g * b
+
 toid (i, _, _, _) = i
 
-main :: IO ()
-main = do
-  fileHandle <- openFile "inp.txt" ReadMode
-  contents <- hGetContents fileHandle
+pt1 contents = sum $ map toid $ filter gamevalid $ map procline $ lines contents
 
-  print $ sum $ map toid $ filter gamevalid $ map procline $ lines contents
+pt2 contents = sum $ map (powergame . procline) $ lines contents
 
-  hClose fileHandle
+d02 contents = (pt1 contents, pt2 contents)

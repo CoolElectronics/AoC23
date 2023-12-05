@@ -1,12 +1,9 @@
+module D01 where
+
 import Data.Char
 import Data.List
 import Debug.Trace
 import System.IO
-  ( IOMode (ReadMode),
-    hClose,
-    hGetContents,
-    openFile,
-  )
 import Text.Read
 
 x |> f = f x
@@ -72,11 +69,17 @@ digitsreplace str =
             then num
             else num <> digitsreplace rest
 
-main :: IO ()
-main = do
-  fileHandle <- openFile "inp.txt" ReadMode
-  contents <- hGetContents fileHandle
+pt2 contents = sum $ map (catends . digitsreplace) $ lines contents
 
-  print $ sum $ map (catends . digitsreplace) $ lines contents
+pt1 contents =
+  sum
+    ( map
+        ( ( \x ->
+              read ([head x] <> [last x])
+          )
+            . filter isDigit
+        )
+        (lines contents)
+    )
 
-  hClose fileHandle
+d01 contents = (pt1 contents, pt2 contents)
