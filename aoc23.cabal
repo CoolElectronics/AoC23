@@ -12,7 +12,6 @@ executable aoc2023
   default-language: Haskell2010
 
   ghc-options:
-    -Wall
 
   default-extensions:
     -- OverloadedStrings
@@ -27,10 +26,12 @@ executable aoc2023
     D02
     D03
     D04
+    D05
 
 
   build-depends:
-      base
+      base,
+      split
     -- -- Package `split`: Functions for splitting lists.
     -- , split ^>=0.2.4
     -- -- Package `containers`: Brings maps, sets, trees, graphs, sequences.
