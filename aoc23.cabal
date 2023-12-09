@@ -27,6 +27,8 @@ executable aoc2023
     D03
     D04
     D05
+    D06
+    D08
 
 
   build-depends:

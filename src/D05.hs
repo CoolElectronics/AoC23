@@ -26,30 +26,31 @@ pt1 text =
   let ([seeds] : maps) = parseinput text
    in minimum $ map (findmappedrec maps) seeds
 
-invertIntervals :: [[Int]] -> [[Int]]
-invertIntervals intervals = map (\[a, b] -> [a + 1, b - a - 1]) $ zipWith (\[_, a] [b, _] -> [a, b]) intervals (tail intervals)
-
 splits :: [[[Int]]] -> (Int, Int) -> Int
+splits _ (9999999, _) = 9999999
 splits (mapping : rest) (start, len) =
-  let ranges = (map (\[s, l] -> [s, s, l]) (invertIntervals ([[0, 1]] <> (map (\[dest, source, length] -> [source, length]) mapping) <> [[999, 1]]))) <> mapping
-      ranges2 = filter (\[_, source, length] -> (start + len) >= source && start <= (source + length)) $ traceShowId ranges
+  let ranges = filter (\[_, source, length] -> (start + len) >= source && start <= (source + length)) mapping
+
+      ranges3 = map (\[_, source, length] -> [start, start, source]) $ filter (\[_, source, length] -> start < source) ranges
+      ranges6 = map (\[_, source, length] -> [start + len, start + len, (start + len) - (source + length)]) $ filter (\[_, source, length] -> (start + len) > (source + length)) ranges
+      ranges4 = ranges3 <> ranges <> ranges6
+      ranges2 = if null ranges4 then [[start, start, len]] else ranges4
       intersection dest source length = (max source start, min (source + length) (start + len) - max source start)
       rintersection dest source length = (fst (intersection dest source length) - source + dest, snd (intersection dest source length))
       interesctingranges = map (\[dest, source, length] -> rintersection dest source length) ranges2
-   in traceShow
-        (":" <> show ranges2 <> ":" <> show ranges <> ":" <> show interesctingranges)
-        ( minimum $
-            traceShowId $
-              if null rest
-                then map fst interesctingranges
-                else map (\[dest, source, length] -> splits rest (rintersection dest source length)) ranges2
-        )
+   in -- traceShow
+      -- (":" <> show ranges2 <> ":" <> show ranges <> ":" <> show interesctingranges)
+      ( minimum $
+          if null rest
+            then map fst interesctingranges
+            else map (\[dest, source, length] -> splits rest (rintersection dest source length)) ranges2
+      )
 
 -- (minimum $ if null rest then map (\[dest, source, length] -> fst (intersection dest source length)) ranges2 else (map (\[dest, source, length] -> splits rest (intersection dest source length)) ranges2))
 
 pt2 text =
   let ([seeds] : maps) = parseinput text
       seedpairs = pairs seeds
-   in map (splits maps) [head seedpairs]
+   in minimum $ map (splits maps) seedpairs
 
 d05 text = (pt1 text, pt2 text)
